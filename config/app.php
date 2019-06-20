@@ -229,4 +229,8 @@ return [
 
     ],
 
+    'middleware_except' => [
+        'Api\AuthController' => ['login', 'register'],
+    ]
+
 ];

@@ -4,6 +4,7 @@ return [
 	'handler' => 'Api\AuthController',
 	'route' => [
 		['login', 'POST', 'login'],
-		['register', 'POST', 'registered']
+		['register', 'POST', 'registered'],
+		['test', 'GET', 'index']
 	]
 ];

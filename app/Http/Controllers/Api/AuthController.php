@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Model\User;
 use App\Http\Model\Test;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -29,24 +30,19 @@ class AuthController extends Controller
 
     public function index()
     {
-    	$this->resp('test', Response::HTTP_OK);
+        $this->resp('test', Response::HTTP_OK);
         return response()->json($this->resp, Response::HTTP_OK);
     }
 
     public function login()
     {
-    	//$this->validateLogin($request);
-    	$request = Request();
-    	$params = Request()->all();
-    	$this->validateLogin($request);
-
-    	if ($this->attemptLogin($request)) {
+        //$this->validateLogin($request);
+        $request = Request();
+        $params = Request()->all();
+        $this->validateLogin($request);
+        if ($this->attemptLogin($request)) {
             $user = $this->guard()->user();
-
-            var_dump($user);die;
-
-            //User::ge
-            //User::generateToken();
+            $user->generateToken();
 
             return response()->json([
                 'data' => $user->toArray(),
@@ -72,7 +68,7 @@ class AuthController extends Controller
         $user->generateToken();
 
         return response()->json(['data' => $user->toArray()], 201);
-        
+
         // $test = DB::table('test')->get();
         // $this->resp($test, Response::HTTP_OK);
         // return response()->json($this->resp, Response::HTTP_OK);

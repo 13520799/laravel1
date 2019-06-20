@@ -11,22 +11,36 @@
 */
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-//define('ROOT_PATH', realpath(__DIR__.'/../'));
+use Illuminate\Foundation\Application as App;
+define('ROOT_ROUTE', realpath(__DIR__.'/../routes/api'));
+$route_files = scandir(ROOT_ROUTE);
 
-$route_files = scandir(ROOT_PATH . '/routes/api');
-
+$middleware_except = App()->config->get('app.middleware_except');
 
 foreach ($route_files as $key => $file) {
 	$pathinfo = pathinfo($file);
     if ($pathinfo['extension'] === 'php') {
-    	$config = include(ROOT_PATH . '/routes/api/' . $file);
+    	$config = include(ROOT_ROUTE . '/' . $file);
     	foreach ($config['route'] as $route) {
             list($uri, $method, $func) = $route;
             $method = strtolower($method);
-            Route::$method($uri, $config['handler'] . '@' . $func);
+            if (isset($middleware_except[$config['handler']]) && in_array($func, $middleware_except[$config['handler']])) {
+                Route::$method($uri, $config['handler'] . '@' . $func);
+            } else {
+                Route::$method($uri, $config['handler'] . '@' . $func)->middleware('auth:api');
+            }
+            
         }
     }
 }
 
-//Route::get('photo', 'Api\PhotoController@index');
+// die;
+// Route::group(['middleware' => 'auth:api'], function() {
+//     Route::get('photo', 'Api\PhotoController@index');
+//     Route::get('test', function() {
+//         return response()->json(request()->user());
+//     });
+// });
+
+
 
